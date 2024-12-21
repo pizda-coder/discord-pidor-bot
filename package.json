@@ -1,0 +1,10 @@
+{
+    "name": "discord-pidor-bot",
+    "scripts": {
+        "prettify": "biome check --write ."
+    },
+    "devDependencies": {
+        "@biomejs/biome": "1.9.4"
+    },
+    "packageManager": "yarn@4.4.1"
+}
