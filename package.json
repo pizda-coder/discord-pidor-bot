@@ -1,10 +1,32 @@
 {
     "name": "discord-pidor-bot",
+    "version": "1.0.0",
+    "private": true,
+    "bin": "bin/index.js",
+    "main": "build/bot.js",
+    "files": ["bin", "build"],
     "scripts": {
-        "prettify": "biome check --write ."
+        "clear": "rimraf build",
+        "dev": "tsx src/index.ts",
+        "start": "node bin/index.js",
+        "build": "esbuild --bundle src/index.ts --platform=node --target=node22 --outfile=build/bot.js --minify --keep-names --sourcemap=external",
+        "prettify": "biome check --write .",
+        "prepare": "husky"
+    },
+    "dependencies": {
+        "discord.js": "14.16.3",
+        "dotenv": "16.4.7",
+        "pino": "9.5.0"
     },
     "devDependencies": {
-        "@biomejs/biome": "1.9.4"
+        "@biomejs/biome": "1.9.4",
+        "@types/dotenv": "8.2.3",
+        "@types/node": "22.10.2",
+        "esbuild": "0.24.2",
+        "husky": "9.1.7",
+        "rimraf": "6.0.1",
+        "tsx": "4.19.2",
+        "typescript": "5.7.2"
     },
-    "packageManager": "yarn@4.4.1"
+    "packageManager": "yarn@4.5.3"
 }

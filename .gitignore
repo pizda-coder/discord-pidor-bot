@@ -7,7 +7,12 @@
 !.yarn/sdks
 !.yarn/versions
 
+build
 node_modules
 
 #!.yarn/cache
 .pnp.*
+
+.env*
+
+*.tsbuildinfo

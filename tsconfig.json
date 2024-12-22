@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "incremental": true,
+        "target": "es2016",
+        "lib": ["dom", "es2016"],
+        "module": "node16",
+        "moduleResolution": "node16",
+        "allowJs": false,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "removeComments": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "noEmit": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "useUnknownInCatchVariables": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "include": ["./src/**/*.ts", "./types/**/*.d.ts"],
+    "ts-node": {
+        "files": true,
+        "require": ["tsconfig-paths/register"]
+    }
+}
