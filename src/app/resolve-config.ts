@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 
-import type { AppConfig } from "@/shared/types/config";
+import type { AppConfig } from "@/types/config";
 
 export const resolveConfig = (): AppConfig => {
     dotenv.config();

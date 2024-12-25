@@ -4,6 +4,7 @@
         "source.organizeImports.biome": "explicit"
     },
     "editor.defaultFormatter": "biomejs.biome",
+    "[prisma]": { "editor.defaultFormatter": "Prisma.prisma" },
     "[json]": { "editor.defaultFormatter": "biomejs.biome" },
     "[yaml]": { "editor.defaultFormatter": "biomejs.biome" },
     "[typescript]": { "editor.defaultFormatter": "biomejs.biome" },

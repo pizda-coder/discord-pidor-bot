@@ -1,7 +1,7 @@
 import { Events } from "discord.js";
 
-import { logger } from "@/shared/logging";
-import type { DiscordEvent } from "@/shared/types/discord";
+import { logger } from "@/logging";
+import type { DiscordEvent } from "@/types/discord";
 
 type Event = DiscordEvent<typeof name>;
 
