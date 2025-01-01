@@ -31,17 +31,3 @@ model Games {
 
   @@map("games")
 }
-
-model Roles {
-  id       Int      @id @default(autoincrement())
-  guildId  String   @map("guild_id")
-  roleId   String   @map("role_id")
-  roleType RoleType @default(UNKNOWN) @map("role_type")
-
-  @@map("roles")
-}
-
-enum RoleType {
-  UNKNOWN
-  WINNER
-}
