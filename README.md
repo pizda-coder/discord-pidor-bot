@@ -1,6 +1,6 @@
 # Discord pidor bot
 
-[Invite link](https://discordapp.com/oauth2/authorize?&client_id=1320110494941450321&scope=bot&permissions=0)
+[Invite link](https://discord.com/oauth2/authorize?client_id=1320110494941450321)
 
 ## Правила
 
