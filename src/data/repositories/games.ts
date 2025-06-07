@@ -1,11 +1,17 @@
 import { createRepository } from "./create-repository";
 
 const games = createRepository(database => {
-    const addWinner = async (guildId: string, winnerId: number, time: Date) => {
+    const addWinner = async (guildId: string, hostId: number, winnerId: number, time: Date) => {
         const season = await database.seasons.findFirst({ where: { guildId, isActive: true }, select: { id: true } });
 
         return await database.games.create({
-            data: { guildId, winnerParticipantId: winnerId, seasonId: season?.id ?? 0, timestamp: time }
+            data: {
+                guildId,
+                hostParticipantId: hostId,
+                winnerParticipantId: winnerId,
+                seasonId: season?.id ?? 0,
+                timestamp: time
+            }
         });
     };
 

@@ -17,7 +17,8 @@ model Participants {
   userDisplayName String  @map("user_display_name")
   isActive        Boolean @default(true) @map("is_active")
 
-  games Games[]
+  hostGames   Games[] @relation("host_participant")
+  winnerGames Games[] @relation("winner_participant")
 
   @@map("participants")
 }
@@ -26,11 +27,13 @@ model Games {
   id                  Int      @id @default(autoincrement())
   guildId             String   @map("guild_id")
   seasonId            Int      @map("season_id")
+  hostParticipantId   Int?     @map("host_participant_id")
   winnerParticipantId Int      @map("winner_participant_id")
   timestamp           DateTime @default(now())
 
-  season            Seasons      @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  winnerParticipant Participants @relation(fields: [winnerParticipantId], references: [id], onDelete: Cascade)
+  season            Seasons       @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  hostParticipant   Participants? @relation("host_participant", fields: [hostParticipantId], references: [id], onDelete: Cascade)
+  winnerParticipant Participants  @relation("winner_participant", fields: [winnerParticipantId], references: [id], onDelete: Cascade)
 
   @@map("games")
 }

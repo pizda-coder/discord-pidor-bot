@@ -63,11 +63,11 @@ const execute: DiscordCommand["execute"] = async interaction => {
             string += season.season.isActive ? ` ${bold("(текущий)")}: ` : ": ";
 
             string += season.season.isActive
-                ? season.winners
+                ? season.participants
                       .filter(x => x.isActive)
                       .map(x => `${x.userDisplayName} (${season.maxScore})`)
                       .join(", ")
-                : season.winners.map(x => `${x.userDisplayName} (${season.maxScore})`).join(", ");
+                : season.participants.map(x => `${x.userDisplayName} (${season.maxScore})`).join(", ");
             string += "\n";
         }
 
