@@ -4,30 +4,30 @@ import { participants } from "@/data/repositories";
 import type { DiscordCommand } from "@/types/discord";
 
 const data: DiscordCommand["data"] = new SlashCommandBuilder()
-    .setName("toppedrils")
-    .setDescription("View the top 10 pedrils of this server")
-    .setNameLocalization("ru", "топпедрил")
-    .setDescriptionLocalization("ru", "Посмотреть топ10 педрил этого сервера")
+    .setName("toppidrils")
+    .setDescription("View the top 10 pidrils of this server")
+    .setNameLocalization("ru", "топпидрил")
+    .setDescriptionLocalization("ru", "Посмотреть топ10 пидрил этого сервера")
     .addSubcommand(subcommand =>
         subcommand
             .setName("current")
-            .setDescription("Top 10 pedrils of current season")
+            .setDescription("Top 10 pidrils of current season")
             .setNameLocalization("ru", "текущий")
-            .setDescriptionLocalization("ru", "Топ10 педрил за последний сезон")
+            .setDescriptionLocalization("ru", "Топ10 пидрил за последний сезон")
     )
     .addSubcommand(subcommand =>
         subcommand
             .setName("season")
-            .setDescription("The pedrils of the last 5 seasons")
+            .setDescription("The pidrils of the last 5 seasons")
             .setNameLocalization("ru", "сезонный")
-            .setDescriptionLocalization("ru", "Топовые педрилы последних 5 сезонов")
+            .setDescriptionLocalization("ru", "Топовые пидрилы последних 5 сезонов")
     )
     .addSubcommand(subcommand =>
         subcommand
             .setName("overall")
-            .setDescription("Top 10 pedrils of all time")
+            .setDescription("Top 10 pidrils of all time")
             .setNameLocalization("ru", "глобальный")
-            .setDescriptionLocalization("ru", "Топ10 педрил за всё время")
+            .setDescriptionLocalization("ru", "Топ10 пидрил за всё время")
     );
 
 const execute: DiscordCommand["execute"] = async interaction => {
@@ -39,11 +39,11 @@ const execute: DiscordCommand["execute"] = async interaction => {
         const season = await participants.topHostByCurrentSeason(interaction.guild.id, 10);
 
         if (!season.results.length || season.results.every(result => result.count === 0)) {
-            await defer.edit(interaction.locale === "ru" ? "Педрил пока не определяли" : "No pedrils yet");
+            await defer.edit(interaction.locale === "ru" ? "Пидрил пока не определяли" : "No pidrils yet");
             return;
         }
 
-        let string = `${bold(interaction.locale === "ru" ? `Эти ребята пидорасили как только могли, но кто же эти герои? Топ-10 педрил сезона ${season.number}:` : `Top 10 pedrils of season ${season.number}:`)}\n\n`;
+        let string = `${bold(interaction.locale === "ru" ? `Эти ребята пидорасили всех как могли, но кто же эти герои? Топ-10 пидрил сезона ${season.number}:` : `Top 10 pidrils of season ${season.number}:`)}\n\n`;
         for (const row of season.results) {
             string += `- ${row.participant.userDisplayName}: ${row.count}\n`;
         }
@@ -53,11 +53,11 @@ const execute: DiscordCommand["execute"] = async interaction => {
         const top = await participants.topHostBySeason(interaction.guild.id, 5);
 
         if (!top.length || top.every(x => x.maxScore === 0)) {
-            await defer.edit(interaction.locale === "ru" ? "Педрил пока не определяли" : "No pedrils yet");
+            await defer.edit(interaction.locale === "ru" ? "Пидрил пока не определяли" : "No pidrils yet");
             return;
         }
 
-        let string = `${bold(interaction.locale === "ru" ? "Эти ребята пидорасили как только могли, но кто же эти герои? Топовые педрилы последних 5 сезонов:" : "Top pedrils of the last 5 seasons:")}\n\n`;
+        let string = `${bold(interaction.locale === "ru" ? "Эти ребята пидорасили всех как могли, но кто же эти герои? Топовые пидрилы последних 5 сезонов:" : "Top pidrils of the last 5 seasons:")}\n\n`;
         for (const season of top.sort((x, y) => x.season.index - y.season.index)) {
             string += `- ${bold(`Сезон ${season.season.index + 1}`)}`;
             string += season.season.isActive ? ` ${bold("(текущий)")}: ` : ": ";
@@ -81,11 +81,11 @@ const execute: DiscordCommand["execute"] = async interaction => {
         const top = await participants.topHostByOverall(interaction.guild.id, 10);
 
         if (!top.length || top.every(x => x.count === 0)) {
-            await defer.edit(interaction.locale === "ru" ? "Педрил пока не определяли" : "No pedrils yet");
+            await defer.edit(interaction.locale === "ru" ? "Пидрил пока не определяли" : "No pidrils yet");
             return;
         }
 
-        let string = `${bold(interaction.locale === "ru" ? "Эти ребята пидорасили как только могли, но кто же эти герои? Топ-10 педрил за всё время:" : "Top 10 pedrils of all time:")}\n\n`;
+        let string = `${bold(interaction.locale === "ru" ? "Эти ребята пидорасили всех как могли, но кто же эти герои? Топ-10 пидрил за всё время:" : "Top 10 pidrils of all time:")}\n\n`;
         for (const row of top) {
             string += `- ${row.participant.userDisplayName}: ${row.count}\n`;
         }
