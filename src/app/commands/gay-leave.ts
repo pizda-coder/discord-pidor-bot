@@ -10,21 +10,20 @@ const data: DiscordCommand["data"] = new SlashCommandBuilder()
     .setDescriptionLocalization("ru", "Удалить себя из списка участников");
 
 const execute: DiscordCommand["execute"] = async interaction => {
+    const defer = await interaction.deferReply();
     const { guild, user } = interaction;
 
     if (!guild) return;
 
-    if (await participants.remove(user.id, guild.id)) {
-        await interaction.reply(
-            interaction.locale === Locale.Russian ? "Пидарнул пидорка нахуй" : "Where are you going?!"
-        );
+    const response = await participants.update(user.id, guild.id, false);
+
+    if (response.count > 0) {
+        await defer.edit(interaction.locale === Locale.Russian ? "Пидарнул пидорка нахуй" : "Where are you going?!");
 
         return;
     }
 
-    await interaction.reply(
-        interaction.locale === Locale.Russian ? "Нормально же общались" : "You were not in this game"
-    );
+    await defer.edit(interaction.locale === Locale.Russian ? "А ты кто вообще?" : "You were not in this game");
 };
 
 export const gayLeave = { data, execute } satisfies DiscordCommand;

@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 export const getRandomArrayItem = <T>(array: T[]) => {
-    return array[Math.floor(Math.random() * array.length)];
+    return array[crypto.randomInt(0, array.length)];
 };

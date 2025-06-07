@@ -32,6 +32,7 @@ export const run = async () => {
 
     process.on("SIGINT", shutdown);
     process.on("SIGTERM", shutdown);
+    process.on("SIGQUIT", shutdown);
 
     await client.login(client.config.token);
 };

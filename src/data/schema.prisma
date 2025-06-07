@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "./generated/prisma-client"
+  provider      = "prisma-client-js"
+  output        = "./generated/prisma-client"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -10,11 +11,11 @@ datasource db {
 }
 
 model Participants {
-  id              Int    @id @default(autoincrement())
-  guildId         String @map("guild_id")
-  userId          String @map("user_id")
-  userDisplayName String @map("user_display_name")
-  score           Int
+  id              Int     @id @default(autoincrement())
+  guildId         String  @map("guild_id")
+  userId          String  @map("user_id")
+  userDisplayName String  @map("user_display_name")
+  isActive        Boolean @default(true) @map("is_active")
 
   games Games[]
 
@@ -24,10 +25,33 @@ model Participants {
 model Games {
   id                  Int      @id @default(autoincrement())
   guildId             String   @map("guild_id")
+  seasonId            Int      @map("season_id")
   winnerParticipantId Int      @map("winner_participant_id")
   timestamp           DateTime @default(now())
 
+  season            Seasons      @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   winnerParticipant Participants @relation(fields: [winnerParticipantId], references: [id], onDelete: Cascade)
 
   @@map("games")
+}
+
+model Seasons {
+  id        Int      @id @default(autoincrement())
+  guildId   String   @map("guild_id")
+  index     Int      @default(0)
+  timestamp DateTime @default(now())
+  isActive  Boolean  @default(true) @map("is_active")
+
+  Games Games[]
+
+  @@map("seasons")
+}
+
+model SeasonEndVotes {
+  id        Int      @id @default(autoincrement())
+  guildId   String   @map("guild_id")
+  userId    String   @map("user_id")
+  timestamp DateTime @default(now())
+
+  @@map("season_end_votes")
 }
