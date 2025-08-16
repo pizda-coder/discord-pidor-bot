@@ -28,6 +28,21 @@ const data: DiscordCommand["data"] = new SlashCommandBuilder()
             .setDescription("Top 10 pidrils of all time")
             .setNameLocalization("ru", "глобальный")
             .setDescriptionLocalization("ru", "Топ10 пидрил за всё время")
+    )
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName("bygay")
+            .setDescription("Top pidrils and their victims")
+            .setNameLocalization("ru", "пидорский")
+            .setDescriptionLocalization("ru", "Топовые пидрилы и кого они пидорнули")
+            .addUserOption(option =>
+                option
+                    .setName("pidrila")
+                    .setDescription("Enter the pidrila")
+                    .setNameLocalization("ru", "пидрила")
+                    .setDescriptionLocalization("ru", "Укажи пидрилу")
+                    .setRequired(false)
+            )
     );
 
 const execute: DiscordCommand["execute"] = async interaction => {
@@ -77,7 +92,7 @@ const execute: DiscordCommand["execute"] = async interaction => {
         }
 
         await defer.edit(string);
-    } else {
+    } else if (interaction.options.getSubcommand(true) === "overall") {
         const top = await participants.topHostByOverall(interaction.guild.id, 10);
 
         if (!top.length || top.every(x => x.count === 0)) {
@@ -88,6 +103,111 @@ const execute: DiscordCommand["execute"] = async interaction => {
         let string = `${bold(interaction.locale === "ru" ? "Эти ребята пидорасили всех как могли, но кто же эти герои? Топ-10 пидрил за всё время:" : "Top 10 pidrils of all time:")}\n\n`;
         for (const row of top) {
             string += `- ${row.participant.userDisplayName}: ${row.count}\n`;
+        }
+
+        await defer.edit(string);
+    } else {
+        const overall = await participants.topHostWithWinnerByOverall(interaction.guild.id);
+        const target = interaction.options.getUser("pidrila", false);
+
+        if (overall.games.length === 0) {
+            await defer.edit(interaction.locale === "ru" ? "Пидрил пока не определяли" : "No pidrils yet");
+            return;
+        }
+
+        let finalUserId = "";
+
+        if (target) {
+            if (overall.games.some(game => game.hostUserId === target.id)) {
+                finalUserId = target.id;
+            } else {
+                await defer.edit(
+                    interaction.locale === "ru"
+                        ? `${bold(target.displayName)} пока никого не пидорасил!`
+                        : `${bold(target.displayName)} hasn't fucked anyone yet!`
+                );
+                return;
+            }
+        }
+
+        let string = finalUserId
+            ? `${bold(
+                  interaction.locale === "ru"
+                      ? `Сейчас мы узнаем кого ${target?.displayName} пидорасил больше всего:`
+                      : `Now we'll find out who ${target?.displayName} fucked whom the most:`
+              )}\n\n`
+            : `${bold(
+                  interaction.locale === "ru"
+                      ? "Сейчас мы узнаем кто кого пидорасил больше всего:"
+                      : "Now we'll find out who fucked whom the most:"
+              )}\n\n`;
+
+        const groupedByHost = overall.games.reduce(
+            (acc, { hostUserId, winnerUserId, winnerScore }) => {
+                if (!acc[hostUserId]) {
+                    acc[hostUserId] = [];
+                }
+
+                const existingGroup = acc[hostUserId].find(group => group.score === winnerScore);
+
+                if (existingGroup) {
+                    existingGroup.winners.push(winnerUserId);
+                } else {
+                    acc[hostUserId].push({
+                        score: winnerScore,
+                        winners: [winnerUserId]
+                    });
+                }
+
+                return acc;
+            },
+            {} as Record<string, { score: number; winners: string[] }[]>
+        );
+
+        const result = Object.entries(groupedByHost).map(([hostUserId, results]) => ({
+            hostUserId,
+            results: results
+                .sort((a, b) => b.score - a.score)
+                .map(result => ({
+                    score: result.score,
+                    winners: result.winners.sort()
+                }))
+        }));
+
+        const finalResult = result.sort((a, b) => {
+            const maxScoreA = Math.max(...a.results.map(r => r.score));
+            const maxScoreB = Math.max(...b.results.map(r => r.score));
+
+            return maxScoreB - maxScoreA;
+        });
+
+        const finalWithDisplayNames = finalResult
+            .map(hostGroup => ({
+                hostUserId: hostGroup.hostUserId,
+                hostDisplayName: overall.players[hostGroup.hostUserId],
+                results: hostGroup.results.map(result => ({
+                    score: result.score,
+                    winners: result.winners.map(winnerUserId => overall.players[winnerUserId])
+                }))
+            }))
+            .filter(x => (finalUserId ? x.hostUserId === finalUserId : true));
+
+        for (const row of finalWithDisplayNames) {
+            const isMultiple = finalWithDisplayNames.length > 1;
+
+            if (isMultiple) {
+                string += bold(row.hostDisplayName);
+                string += ": ";
+            }
+
+            string += row.results
+                .map(
+                    (data, i) =>
+                        `${isMultiple ? "\n" : row === finalWithDisplayNames[0] && i === 0 ? "" : "\n"}- ${bold(data.score.toString())} (${data.winners.join(", ")})`
+                )
+                .join("");
+
+            string += "\n";
         }
 
         await defer.edit(string);

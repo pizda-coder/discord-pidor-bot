@@ -370,6 +370,59 @@ const participants = createRepository(database => {
         return top;
     };
 
+    const topHostWithWinnerByOverall = async (guildId: string) => {
+        const groups = await database.games.groupBy({
+            by: ["hostParticipantId", "winnerParticipantId"],
+            where: {
+                guildId,
+                hostParticipant: {
+                    isActive: true
+                },
+                winnerParticipant: {
+                    isActive: true
+                }
+            },
+            _count: {
+                winnerParticipantId: true
+            }
+        });
+
+        const participantIds = [
+            ...new Set(groups.flatMap(x => [x.hostParticipantId, x.winnerParticipantId]).filter(x => x !== null))
+        ];
+
+        const participants = await database.participants.findMany({
+            where: {
+                id: {
+                    in: participantIds.length > 0 ? participantIds : [-1]
+                }
+            },
+            select: {
+                id: true,
+                userId: true,
+                userDisplayName: true
+            }
+        });
+
+        const players: Record<number, { userId: string; displayName: string }> = {};
+
+        for (const participant of participants) {
+            players[participant.id] = {
+                userId: participant.userId,
+                displayName: participant.userDisplayName
+            };
+        }
+
+        return {
+            games: groups.map(group => ({
+                hostUserId: players[group.hostParticipantId as number].userId,
+                winnerUserId: players[group.winnerParticipantId].userId,
+                winnerScore: group._count.winnerParticipantId
+            })),
+            players: Object.fromEntries(Object.values(players).map(x => [x.userId, x.displayName]))
+        };
+    };
+
     return {
         get,
         add,
@@ -381,7 +434,8 @@ const participants = createRepository(database => {
         topByCurrentSeason,
         topHostByOverall,
         topHostBySeason,
-        topHostByCurrentSeason
+        topHostByCurrentSeason,
+        topHostWithWinnerByOverall
     };
 });
 
