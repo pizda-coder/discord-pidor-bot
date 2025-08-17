@@ -4,10 +4,7 @@
     "private": true,
     "bin": "bin/index.js",
     "main": "build/bot.js",
-    "files": [
-        "bin",
-        "build"
-    ],
+    "files": ["bin", "build"],
     "scripts": {
         "clear": "rimraf build",
         "dev": "tsx src/index.ts",
