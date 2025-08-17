@@ -23,7 +23,9 @@ const hostOnRenderCom = () => {
         };
 
         setInterval(() => {
-            https.get(baseUrl);
+            const error = https.get(baseUrl).errored;
+
+            if (error) logger.debug(error);
         }, 5000 + getRandomInt(500, 1000));
     }
 };
